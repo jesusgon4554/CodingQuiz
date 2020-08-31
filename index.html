@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=\, initial-scale=1.0">
+    <title>Coding Quiz</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+  <div class="container">
+    <header id="start">
+        <h1>Coding Quiz</h1>
+    </header>
+
+  <section>
+    <div id=quiz>
+      <div id="question"><p>holder</p></div> 
+        <button id="a" onclick="checkAnswer('a')">A</button>
+        <button id="b" onclick="checkAnswer('b')">B</button>
+        <button id="c" onclick="checkAnswer('c')">C</button>
+        <button id="d" onclick="checkAnswer('d')">D</button>
+          <div id="result"></div>
+    </div>     
+  </section>
+
+<!--SCORING AND REPLAY-->
+  <section>
+    <div id="gameOver"> 
+        <div id="finalScore"></div>
+        <input type="text" size="40" placeholder="Initials" name="initials" id="initals"/>
+        <button id= "submitScore">Submit</button>
+      </div>
+
+      <div id="highScoreContainer">
+        <div id="highScorePage">
+          <div id="highscoresHeaders">
+            <h4>Initals</h4>
+            <h4>Score</h4>
+          </div>  
+        <div id = "yourInitials"></div>
+        <div id = "yourScore"></div>
+      </div>
+      <div id="endGame">
+        <button id="playAgain" onclick="replayQuiz()">Play Again</button>
+        <button id="clear" onclick="clear()">Clear</button>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <ul>
+        <li><h2>Time: <span id="time"></span></h3></li>
+        <li><h2>Score: <span id="score"></span></h3></li> 
+        <li><h2 id="highscores">Highscores</h2></li>
+      </ul>
+  </footer>
+
+
+  <script src="script.js"></script>
+</body>
+</html>
