@@ -1,27 +1,29 @@
-//html selectors
-var quiz = document.getElementById("quiz");
-var result = document.getElementById("result");
-var totalScore = document.getElementById("finalScore");
-var gameOver = document.getElementById("gameOver");
-var quizQuestion = document.getElementById("question");
-var timer = document.getElementById("time");
-var start = document.getElementById("start");
-var highScoreContainer= document.getElementById("highScoreContainer");
-var highScoresPage = document.getElementById("highScorePage");
-var highScoreName= document.getElementById("yourInitals");
-var score = document.getElementById("yourScore");
-var end = document.getElementById("endGame");
-var submit = document.getElementById("submitScore");
-var highScores = document.getElementById("highScores");
+//HTML elements //
+var quizBody = document.getElementById("quiz");
+var resultsEl = document.getElementById("result");
+var finalScoreEl = document.getElementById("finalScore");
+var gameoverDiv = document.getElementById("gameover");
+var questionsEl = document.getElementById("questions");
+var quizTimer = document.getElementById("timer");
+var startQuizButton = document.getElementById("startbtn");
+var startQuizDiv = document.getElementById("startpage");
+var highscoreContainer = document.getElementById("highscoreContainer");
+var highscoreDiv = document.getElementById("high-scorePage");
+var highscoreInputName = document.getElementById("initials");
+var highscoreDisplayName = document.getElementById("highscore-initials");
+var endGameBtns = document.getElementById("endGameBtns");
+var submitScoreBtn = document.getElementById("submitScore");
+var highscoreDisplayScore = document.getElementById("highscore-score");
 
 
-// button selection
+
+// Choice button IDs 
 var buttonA = document.getElementById("a");
 var buttonB = document.getElementById("b");
 var buttonC = document.getElementById("c");
 var buttonD = document.getElementById("d");
 
-//Questions
+//Quiz Question
 var questions= [{
     question: "What does HTML stand for?",
     choice1: "Hyper Target Machine Langauge",
@@ -47,7 +49,7 @@ var questions= [{
     answer: "d"},
     {
 
-    question: "What is the <a> tag used for?",
+    question: "What is the 'a' tag used for?",
     choice1: "Pictures",
     choice2: "Links",
     choice3: "Arrays",
@@ -106,25 +108,146 @@ var questions= [{
 
 ];
 
-//vars
-var finalQuestionIndex = quesions.length;
-var quesionIndex = 0;
-var timeAlloted = 70;
-var timeInterval;
+// global variables
+var finalQuestionIndex = questions.length;
+var currentQuestionIndex = 0;
+var timeLeft = 50;
+var timerInterval;
 var score = 0;
 var correct;
 
-//generate questions and answers
-function quizQuestions(){
-    gameover.style.display = "none";
-    if (questionIndex === finalQuestionIndex){
+//Generate questions and answers
+function generateQuizQuestion(){
+    gameoverDiv.style.display = "none";
+    if (currentQuestionIndex === finalQuestionIndex){
         return showScore();
     } 
     var currentQuestion = questions[currentQuestionIndex];
-    quizQuestion.innerHTML = "<p>" + currentQuestion.question + "</p>";
-    buttonA.innerHTML = currentQuestion.choiceA;
-    buttonB.innerHTML = currentQuestion.choiceB;
-    buttonC.innerHTML = currentQuestion.choiceC;
-    buttonD.innerHTML = currentQuestion.choiceD;
+    questionsEl.innerHTML = "<p>" + currentQuestion.question + "</p>";
+    buttonA.innerHTML = currentQuestion.choice1;
+    buttonB.innerHTML = currentQuestion.choice2;
+    buttonC.innerHTML = currentQuestion.choice3;
+    buttonD.innerHTML = currentQuestion.choice4;
+};
+
+// Start Quiz, Timer, hides start button, and displays first question
+function startQuiz(){
+    gameoverDiv.style.display = "none";
+    startQuizDiv.style.display = "none";
+    generateQuizQuestion();
+
+    //Timer
+    timerInterval = setInterval(function() {
+        timeLeft--;
+        quizTimer.textContent = "Time left: " + timeLeft;
+    
+        if(timeLeft === 0) {
+          clearInterval(timerInterval);
+          showScore();
+        }
+      }, 1000);
+    quizBody.style.display = "block";
 }
-quizQuestions()
+// end of quiz
+function showScore(){
+    quizBody.style.display = "none"
+    gameoverDiv.style.display = "flex";
+    clearInterval(timerInterval);
+    highscoreInputName.value = "";
+    finalScoreEl.innerHTML = "You got " + score + " out of " + questions.length + " correct!";
+}
+
+// shows high scores
+submitScoreBtn.addEventListener("click", function highscore(){
+    
+    // alert to add initials 
+    if(highscoreInputName.value === "") {
+        alert("Enter your initials.");
+        return false;
+    }else{
+        // variables for user scores //
+        var savedHighscores = JSON.parse(localStorage.getItem("savedHighscores")) || [];
+        var currentUser = highscoreInputName.value.trim();
+        var currentHighscore = {
+            name : currentUser,
+            score : score
+        };
+    
+        gameoverDiv.style.display = "none";
+        highscoreContainer.style.display = "flex";
+        highscoreDiv.style.display = "block";
+        endGameBtns.style.display = "flex";
+        
+        savedHighscores.push(currentHighscore);
+        localStorage.setItem("savedHighscores", JSON.stringify(savedHighscores));
+        generateHighscores();
+
+    }
+    
+});
+
+// clear and add high scores
+function generateHighscores(){
+    highscoreDisplayName.innerHTML = "";
+    highscoreDisplayScore.innerHTML = "";
+    var highscores = JSON.parse(localStorage.getItem("savedHighscores")) || [];
+    for (i=0; i<highscores.length; i++){
+        var newNameSpan = document.createElement("li");
+        var newScoreSpan = document.createElement("li");
+        newNameSpan.textContent = highscores[i].name;
+        newScoreSpan.textContent = highscores[i].score;
+        highscoreDisplayName.appendChild(newNameSpan);
+        highscoreDisplayScore.appendChild(newScoreSpan);
+    }
+}
+
+// high scores page
+function showHighscore(){
+    startQuizDiv.style.display = "none"
+    gameoverDiv.style.display = "none";
+    highscoreContainer.style.display = "flex";
+    highscoreDiv.style.display = "block";
+    endGameBtns.style.display = "flex";
+
+    generateHighscores();
+}
+
+//clears local storage
+function clearScore(){
+    window.localStorage.clear();
+    highscoreDisplayName.textContent = "";
+    highscoreDisplayScore.textContent = "";
+}
+
+//resets variables and quiz
+function replayQuiz(){
+    highscoreContainer.style.display = "none";
+    gameoverDiv.style.display = "none";
+    startQuizDiv.style.display = "flex";
+    timeLeft = 76;
+    score = 0;
+    currentQuestionIndex = 0;
+}
+
+// check response
+function checkAnswer(answer){
+    correct = questions[currentQuestionIndex].answer;
+
+    if (answer === correct && currentQuestionIndex !== finalQuestionIndex){
+        score++;
+        
+        currentQuestionIndex++;
+        generateQuizQuestion();
+        //display in the results div that the answer is correct.
+    }else if (answer !== correct && currentQuestionIndex !== finalQuestionIndex){
+       
+        currentQuestionIndex++;
+        generateQuizQuestion();
+        //display in the results div that the answer is wrong.
+    }else{
+        showScore();
+    }
+}
+
+// This button starts quiz. //
+startQuizButton.addEventListener("click",startQuiz);
